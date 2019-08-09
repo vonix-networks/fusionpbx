@@ -275,7 +275,7 @@
 	}
 
 //check if provisioning has been enabled
-	if ($provision["enabled"] != "true") {
+	if (strtolower($provision["enabled"]) != "true") {
 		syslog(LOG_WARNING, '['.$_SERVER['REMOTE_ADDR']."] provision attempt but provisioning is not enabled for ".check_str($_REQUEST['mac']));
 		http_error('404');
 	}
