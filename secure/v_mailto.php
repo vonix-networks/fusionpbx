@@ -307,7 +307,7 @@
 					$mail->AddStringAttachment($parts_array["Body"],$file,$encoding,$mime_type);
 					if (function_exists(get_transcription)) {
 						$attachments_array = $mail->GetAttachments();
-						$transcription = get_transcription($attachments_array[0]);
+						$transcription = get_transcription($attachments_array[0], $file);
 						echo "Transcription: " . $transcription;
 					} else {
 						$transcription = '';
