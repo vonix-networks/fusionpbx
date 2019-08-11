@@ -167,7 +167,7 @@
 
 	// overwrite with domain-specific smtp server settings, if any
 	if (is_uuid($headers["X-FusionPBX-Domain-UUID"])) {
-		$sql = "select domain_setting_subcategory, domain_setting_value ";
+		$sql = "select domain_setting_category, domain_setting_subcategory, domain_setting_name, domain_setting_value ";
 		$sql .= "from v_domain_settings ";
 		$sql .= "where domain_uuid = :domain_uuid ";
 		$sql .= "and (domain_setting_category = 'email' or domain_setting_category = 'voicemail') ";
@@ -179,6 +179,8 @@
 			foreach ($result as $row) {
 				if ($row['domain_setting_value'] != '') {
 					$smtp[str_replace('smtp_','',$row["domain_setting_subcategory"])] = $row['domain_setting_value'];
+				} else if ($row['domain_setting_category'] == 'voicemail') {
+					$_SESSION['voicemail'][$row['domain_setting_subcategory'][$row['domain_setting_name']] = $row['domain_setting_value'];
 				}
 			}
 		}
