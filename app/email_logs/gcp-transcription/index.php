@@ -17,7 +17,6 @@ function get_transcription($attachment_str, $filename) {
 	}
 
 	if (!$enabled) {
-		file_put_contents("/tmp/transcription.log", "NOT ENABLED");
 		return "";
 	}
 
