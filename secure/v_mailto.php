@@ -162,7 +162,6 @@
 		$sql .= "from v_domain_settings ";
 		$sql .= "where domain_uuid = '".$headers["X-FusionPBX-Domain-UUID"]."' ";
 		$sql .= "and (domain_setting_category = 'email' or domain_setting_category = 'voicemail') ";
-		$sql .= "and domain_setting_name = 'text' ";
 		$sql .= "and domain_setting_enabled = 'true' ";
 		$prep_statement = $db->prepare($sql);
 		if ($prep_statement) {
@@ -173,7 +172,6 @@
 					$smtp[str_replace('smtp_','',$row["domain_setting_subcategory"])] = $row['domain_setting_value'];
 				}
 				if ($row['domain_setting_category'] == 'voicemail') {
-		
 					$_SESSION['voicemail'][$row['domain_setting_subcategory']][$row['domain_setting_name']] = $row['domain_setting_value'];
 				}
 			}
