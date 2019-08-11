@@ -182,7 +182,6 @@
 					$smtp[str_replace('smtp_','',$row["domain_setting_subcategory"])] = $row['domain_setting_value'];
 				}
 				if ($row['domain_setting_category'] == 'voicemail') {
-		
 					$_SESSION['voicemail'][$row['domain_setting_subcategory']][$row['domain_setting_name']] = $row['domain_setting_value'];
 				}
 			}
