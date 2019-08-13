@@ -559,11 +559,13 @@
 		freeswitch.consoleLog("INFO", "[FAX] RETRY STATS SUCCESS: GATEWAY[".. fax_uri .."] VARS[" .. fax_trial .. "]");
 		email_address = email_address:gsub("\\,", ",");
 
+		local pdf_file = fax_file and string.gsub(fax_file, '(%.[^\\/]+)$', '.pdf');
+
 		freeswitch.email(email_address,
 				email_address,
 				"To: "..email_address.."\nFrom: "..from_address.."\nSubject: Fax to: "..number_dialed.." SENT\n"..x_headers,
 				email_message_success ,
-				fax_file
+				pdf_file
 			);
 
 		if (settings['fax']['keep_local']['boolean'] ~= "nil") then
