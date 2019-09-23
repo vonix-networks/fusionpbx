@@ -28,15 +28,15 @@ function get_transcription($attachment_str, $filename) {
 		file_put_contents("$tmp_filename.$vm_ext", $attachment_str);
 		system("sox $tmp_filename.$vm_ext $tmp_filename.flac rate 8k");
 
-		if (isset($_SESSION['voicemail']['transcription_bucket']) && $_SESSION['voicemail']['transcription_bucket']) {
+		if (isset($_SESSION['voicemail']['transcription_bucket']) && $_SESSION['voicemail']['transcription_bucket']['text']) {
 		    // If we have a bucket to store to, save to the bucket temporarily to use the async api
             // to support voicemails over 1 minute
-            $object_name = $tmp_filename . ".flac";
+            $object_name = uniqid("vm_");
 
             $bucket = (new StorageClient())
-                ->bucket($_SESSION['voicemail']['transcription_bucket']);
+                ->bucket($_SESSION['voicemail']['transcription_bucket']['text']);
 
-            $file = fopen($tmp_filename, 'r');
+            $file = fopen($tmp_filename.".flac", 'r');
             $object = $bucket->upload($file, [ 'name' => $object_name ]);
 
             $audio = (new RecognitionAudio())
@@ -63,7 +63,7 @@ function get_transcription($attachment_str, $filename) {
         if ($op->operationSucceeded()) {
             $response = $op->getResult();
             foreach ($response->getResults() as $result) {
-                $transcription .= $result->getAlternatives()[0]->getTranscript();
+                $transcription .= $result->getAlternatives()[0]->getTranscript()." ";
             }
         } else {
             syslog(LOG_WARNING, "Error returned during transcription: " . $op->getError()->getMessage());
