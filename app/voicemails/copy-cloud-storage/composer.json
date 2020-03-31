@@ -1,0 +1,6 @@
+{
+    "name": "vonix/copy-cloud-storage",
+    "require": {
+        "google/cloud-storage": "^1.20"
+    }
+}

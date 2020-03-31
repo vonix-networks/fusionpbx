@@ -325,6 +325,8 @@
 	require "app.voicemail.resources.functions.mwi_notify";
 	require "app.voicemail.resources.functions.tutorial";
 
+	require "app.voicemail.resources.functions.copy_cloud_storage";	
+
 --send a message waiting event
 	if (voicemail_action == "mwi") then
 		--get the mailbox info
@@ -598,6 +600,7 @@
 
 						--send the email with the voicemail recording attached
 							if (tonumber(message_length) > 2) then
+								copy_cloud_storage(voicemail_id_copy, voicemail_message_uuid);
 								send_email(voicemail_id_copy, voicemail_message_uuid);
 								if (voicemail_to_sms) then
 									send_sms(voicemail_id_copy, voicemail_message_uuid);
