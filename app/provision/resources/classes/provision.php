@@ -622,7 +622,6 @@ include "root.php";
 					}
 					unset ($parameters, $device_settings, $sql);
 				}
-
 			//set the template directory
 				if (strlen($provision["template_dir"]) > 0) {
 					$template_dir = $provision["template_dir"];
