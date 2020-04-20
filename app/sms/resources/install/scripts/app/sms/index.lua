@@ -53,6 +53,21 @@
 	  return string.char(tonumber(x, 16))
 	end
 
+	local function shell_esc(s)
+		s = s:gsub("\\","\\\\")
+		s = s:gsub("\"","\\\"")
+		return s
+	end
+
+	local function json_escape(s)
+	  local in_char  = {'\\', '"', '/', '\b', '\f', '\n', '\r', '\t'}
+	  local out_char = {'\\', '"', '/',  'b',  'f',  'n',  'r',  't'}
+	  for i, c in ipairs(in_char) do
+            s = s:gsub(c, '\\' .. out_char[i])
+          end
+	  return s
+	end
+
 	local urldecode = function(url)
 	  if url == nil then
 	    return
@@ -254,7 +269,7 @@
 				body = string.sub(smsraw, smst2end + 1);
 			end
 		end
-		body = body:gsub('%"','');
+		--body = body:gsub('%"','');
 		savebody = body;
 		--body = encodeString((body));
 		body = body:gsub('\n','\\n');
@@ -411,7 +426,9 @@
 				if outbound_caller_id_number:len() < 11 then
 					outbound_caller_id_number = "1" .. outbound_caller_id_number;
 				end
-				cmd = "curl -X POST '" .. api_url .."' -H \"Content-Type:multipart/form-data\"  -F 'message=" .. urlencode(body) .. "' -F 'to_did=" .. to .."' -F 'from_did=" .. outbound_caller_id_number .. "' -u '".. username ..":".. access_key .."'"
+				local json = "{\"from_did\":\"" .. json_escape(outbound_caller_id_number) .. "\",\"to_did\":\"" .. json_escape(to) .. "\",\"message\":\"" .. json_escape(body) .. "\"}"
+
+				cmd ="curl -X POST \"" .. api_url .."\" -H \"Content-Type: application/json\" -d \"" .. shell_esc(json) .. "\" -u '".. username ..":".. access_key .."'";
 			elseif (carrier == "telnyx") then
 				if to:len() < 11 then
 					to = "1" .. to;
