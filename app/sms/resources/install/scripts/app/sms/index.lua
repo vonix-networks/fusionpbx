@@ -56,6 +56,8 @@
 	local function shell_esc(s)
 		s = s:gsub("\\","\\\\")
 		s = s:gsub("\"","\\\"")
+		s = s:gsub("%$","\\$")
+		s = s:gsub("`","\\`")
 		return s
 	end
 

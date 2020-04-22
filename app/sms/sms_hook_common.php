@@ -52,7 +52,6 @@ function route_and_send_sms($from, $to, $body, $media = "") {
 				$mailsent = false;
 				$to = intval(preg_replace('/(^[1])/','', $to));
 				$from = intval($from);
-				$body = preg_replace('([\'])', '\\\'', $body); // escape apostrophes
 				if ($debug) {
 					error_log("TO: " . print_r($to,true));
 					error_log("FROM: " . print_r($from,true));
@@ -183,7 +182,7 @@ function route_and_send_sms($from, $to, $body, $media = "") {
 						}
 					}
 				} else { //single extension
-					$switch_cmd = "api luarun app.lua sms inbound " . $match[0] . "@" . $domain_name . " " . $from . " '" . $body . "' " . $mailsent;
+					$switch_cmd = "api luarun app.lua sms inbound " . $match[0] . "@" . $domain_name . " " . $from . " '" . urlencode($body) . "' " . $mailsent;
 					if ($debug) {
 						error_log(print_r($switch_cmd,true));
 					}
