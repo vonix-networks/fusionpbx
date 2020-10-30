@@ -1,7 +1,9 @@
 <?php
 
-use Google\Auth\AccessToken;
+// Include Google Cloud dependencies using Composer
+require_once __DIR__ . '/vendor/autoload.php';
 
+use Google\Auth\AccessToken;
 
 if (!class_exists('copy_recording_processor')) {
     /**
@@ -13,8 +15,9 @@ if (!class_exists('copy_recording_processor')) {
 
         public function process($data)
         {
-            $this->verifyToken();
             $this->log("Processing message: " . print_r($data, true));
+            $payload = $this->verifyToken();
+            $this->log("Logged in as: " . $payload["email"]);
         }
 
         private function verifyToken()
@@ -40,7 +43,7 @@ if (!class_exists('copy_recording_processor')) {
         private function log(string $message)
         {
             //save to file system (alternative to a syslog server)
-            $fp = fopen($_SESSION['server']['temp']['dir'] . '/xml_cdr_publisher.log', 'a+');
+            $fp = fopen($_SESSION['server']['temp']['dir'] . '/copy_recording_processor.log', 'a+');
             if (!$fp) {
                 return;
             }
