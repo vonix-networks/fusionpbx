@@ -1,0 +1,8 @@
+{
+    "name": "vonix/publish-cdr-pubsub",
+    "require": {
+        "google/cloud-pubsub": "^v1.29.1",
+        "phpseclib/phpseclib": "^2.0",
+        "kelvinmo/simplejwt": "^0.4.2"
+    }
+}

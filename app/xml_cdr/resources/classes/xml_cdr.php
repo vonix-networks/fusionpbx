@@ -24,6 +24,7 @@
 	Mark J Crane <markjcrane@fusionpbx.com>
 */
 
+
 /**
  * xml_cdr class provides methods for adding cdr records to the database
  *
@@ -1318,6 +1319,18 @@ if (!class_exists('xml_cdr')) {
 					}
 			}
 		} //method
+
+		/**
+		 * Publish records using xml_cdr_publisher
+		 */
+		public function publish() {
+			if (isset($this->array)) {
+				$publisher = new xml_cdr_publisher;
+				foreach ($this->array as $row) {
+					$publisher->publish($row);
+				}
+			}
+		}
 
 	} //class
 }
