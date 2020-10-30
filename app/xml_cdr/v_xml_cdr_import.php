@@ -512,6 +512,10 @@
 		//insert xml_cdr into the db
 			if (strlen($start_stamp) > 0) {
 				$database->add();
+
+				$publisher = new xml_cdr_publisher;
+				$publisher->publish($database->fields);
+
 				if ($debug) {
 					echo $database->sql."\n";
 				}
