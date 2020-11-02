@@ -52,7 +52,7 @@ if (!class_exists('copy_recording_processor')) {
         {
             $base = $_SESSION['switch']['recordings']['dir'];
 
-            if (substr($path, 0, strlen($base)) === $path) {
+            if (substr($path, 0, strlen($base)) === $base) {
                 $path = substr($path, strlen($base));
             }
 
