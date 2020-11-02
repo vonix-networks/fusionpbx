@@ -11,9 +11,9 @@ try {
 } catch(AuthenticationException $authenticationException) {
     header('HTTP/1.1 401 Unauthorized');
     die('Invalid token');
-} catch (\http\Exception\InvalidArgumentException $invalidArgumentException) {
+} catch (InvalidArgumentException $invalidArgumentException) {
     header('HTTP/1.1 400 Bad Request');
-    die('Invalid configuration');
+    die($invalidArgumentException->getMessage());
 } catch(Exception $exception) {
     header('HTTP/1.1 500 Internal Server Error');
     die('Unexpected error');

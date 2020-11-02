@@ -7,7 +7,7 @@ use Google\Auth\AccessToken;
 use Google\Cloud\PubSub\IncomingMessageTrait;
 use Google\Cloud\Storage\StorageClient;
 
-class AuthenticationException extends \RuntimeException implements \http\Exception {
+class AuthenticationException extends \RuntimeException {
 }
 
 if (!class_exists('copy_recording_processor')) {
@@ -22,32 +22,62 @@ if (!class_exists('copy_recording_processor')) {
 
         public function process($data)
         {
+            $payload = $this->verifyToken();
+
             $project = $_SESSION['server']['project']['text'];
             if (!$project) {
-                throw new \http\Exception\InvalidArgumentException("Project not configured for recording copy, set a text value at server / project with the gcp project to publish to.");
+                throw new InvalidArgumentException("Project not configured for recording copy, set a text value at server / project with the gcp project to publish to.");
             }
 
             $bucket_name = $_SESSION['recordings']['bucket']['text'];
             if (!$bucket_name) {
-                throw new \http\Exception\InvalidArgumentException("Recording bucket not configured for recording copy, set a text value at recordings / bucket with the gcs bucket to copy to.");
+                throw new InvalidArgumentException("Recording bucket not configured for recording copy, set a text value at recordings / bucket with the gcs bucket to copy to.");
             }
 
-            $payload = $this->verifyToken();
-            $this->log("Logged in as: " . $payload["email"]);
+            // Need a connection to parse message with trait
+            $connection = new \Google\Cloud\PubSub\Connection\Rest([ 'projectId' => $project ]);
+            $message = $this->messageFactory(json_decode($data, true), $connection, $project, true);
 
-
-            $message = $this->messageFactory(json_decode($data, true), null, $project, true);
-
-            $record_path = $message["message"]["data"]["record_path"];
-            $record_name = $message["message"]["data"]["record_name"];
-
-            if ($record_path && $record_name) {
-                $path = $record_path . "/" . $record_name;
-                $this->copy($path, $bucket_name, $path);
+            $path = $this->get_path($message);
+            if ($path) {
+                $this->log("Copying " . $path . " to " . $bucket_name);
+                $this->copy($path, $bucket_name, $this->get_gcs_path($path));
             }
         }
 
-        private function copy($src, $bucket_name, $dest) {
+        /**
+         * Takes a given recording path and strips off the prefix to make a cleaner path in the folder
+         */
+        private function get_gcs_path($path)
+        {
+            $base = $_SESSION['switch']['recordings']['dir'];
+
+            if (substr($path, 0, strlen($base)) === $path) {
+                $path = substr($path, strlen($base));
+            }
+
+            if (substr($path, 0, 1) === "/") {
+                $path = substr($path, 1);
+            }
+
+            return $path;
+        }
+
+        private function get_path($message) 
+        {
+            $data = json_decode($message->data(), true);
+            $record_path = $data["record_path"];
+            $record_name = $data["record_name"];
+
+            if ($record_path && $record_name) {
+                return $record_path . "/" . $record_name;
+            }
+
+            return false;
+        }
+       
+        private function copy($src, $bucket_name, $dest) 
+        {
             try {
                 $bucket = (new StorageClient())
                     ->bucket($bucket_name);
