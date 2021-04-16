@@ -750,7 +750,7 @@ if (!function_exists('fax_split_dtmf')) {
 		}
 
 		if ($mailto_address_fax != '' && $mailto_address_user != $mailto_address_fax) {
-			$mailto_address = $mailto_address_fax.",".$mailto_address_user;
+			$mailto_address = $mailto_address_user.",".$mailto_address_fax;
 		}
 		else {
 			$mailto_address = $mailto_address_user;
@@ -794,8 +794,8 @@ if (!function_exists('fax_split_dtmf')) {
 
 			if ($fax_send_mode != 'queue') {
 				$dial_string .= $fax_variables;
-				$dial_string .= "mailto_address='"     . $mailto_address   . "',";
-				$dial_string .= "mailfrom_address='"   . $mailfrom_address . "',";
+				$dial_string .= "mailto_address="      . str_replace(",", "\\,", $mailto_address)   . ",";
+				$dial_string .= "mailfrom_address="    . str_replace(",", "\\,", $mailfrom_address) . ",";
 				$dial_string .= "fax_uri=" . $fax_uri  . ",";
 				$dial_string .= "fax_retry_attempts=1" . ",";
 				$dial_string .= "fax_retry_limit=20"   . ",";
@@ -804,7 +804,6 @@ if (!function_exists('fax_split_dtmf')) {
 				$dial_string .= "fax_use_ecm=off"      . ",";
 				$dial_string .= "api_hangup_hook='lua fax_retry.lua'";
 				$dial_string  = "{" . $dial_string . "}" . $fax_uri." &txfax('".$fax_file."')";
-
 				$fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
 				if ($fp) {
 					$cmd = "api originate " . $dial_string;
