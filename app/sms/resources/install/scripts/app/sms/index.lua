@@ -421,6 +421,16 @@
 					outbound_caller_id_number = "1" .. outbound_caller_id_number;
 				end
 				cmd="curl -v -X POST " .. api_url .." -u " .. access_key .. ":" .. secret_key .. " -H \"Content-type: application/json\" -d '{\"from\": \"+" .. outbound_caller_id_number .. "\", \"to\": \"+" .. to .."\", \"text\": \"" .. body .."\"}'"		
+			elseif (carrier == "questblue") then
+				if to:len() == 11 then
+					to = to:sub(2);
+				end
+				if outbound_caller_id_number:len() == 11 then
+					outbound_caller_id_number = outbound_caller_id_number:sub(2);
+				end
+				local json = "{\"did\":\"" .. json_escape(outbound_caller_id_number) .. "\",\"did_to\":\"" .. json_escape(to) .. "\",\"msg\":\"" .. json_escape(body) .. "\"}"
+				
+				cmd ="curl -X POST \"" .. api_url .."\" -H \"Content-Type: application/json\" -H \"Security-Key: " .. secret_key .. "\" -d \"" .. shell_esc(json) .. "\" -u '".. username ..":".. access_key .."'";
 			elseif (carrier == "thinq") then
 				if to:len() < 11 then
 					to = "1" .. to;
