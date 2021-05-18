@@ -32,7 +32,7 @@
 <DNS_Server_Order ua="na">Manual</DNS_Server_Order> <!-- options: Manual/Manual,DHCP/DHCP,Manual -->
 <DNS_Query_Mode ua="na">Parallel</DNS_Query_Mode> <!-- options: Parallel/Sequential -->
 <DNS_Query_TTL_Ignore ua="na">No</DNS_Query_TTL_Ignore>
-<Syslog_Server ua="na"></Syslog_Server>
+<Syslog_Server ua="na">{$spa_syslog_server}</Syslog_Server>
 <Debug_Server ua="na"></Debug_Server>
 <Debug_Level ua="na">0</Debug_Level> <!-- options: 0/1/2/3 -->
 <Layer_2_Logging ua="na">No</Layer_2_Logging>
@@ -1754,11 +1754,19 @@
 <LDAP_Number_Mapping ua="na"></LDAP_Number_Mapping>
 
 <!-- XML Service -->
+{if $spa_directory_enabled == "true"}
+<XML_Directory_Service_Name ua="na">Corporate Directory</XML_Directory_Service_Name>
+<XML_Directory_Service_URL ua="na">http://{$domain_name}{$project_path}/app/provision/$MA-directory.xml</XML_Directory_Service_URL>
+<XML_User_Name ua="na">{$http_auth_username}</XML_User_Name>
+<XML_Password ua="na">{$http_auth_password}</XML_Password>
+<XML_Application_Service_Name ua="na"></XML_Application_Service_Name>
+<XML_Application_Service_URL ua="na"></XML_Application_Service_URL>
+{else}
 <XML_Directory_Service_Name ua="na"></XML_Directory_Service_Name>
 <XML_Directory_Service_URL ua="na"></XML_Directory_Service_URL>
 <XML_Application_Service_Name ua="na"></XML_Application_Service_Name>
 <XML_Application_Service_URL ua="na"></XML_Application_Service_URL>
-
+{/if}
 <!-- Extension Mobility -->
 <EM_Enable ua="na">No</EM_Enable>
 <EM_User_Domain ua="na"></EM_User_Domain>
