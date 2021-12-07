@@ -39,7 +39,7 @@ if (!class_exists('copy_recording_processor')) {
             $message = $this->messageFactory(json_decode($data, true), $connection, $project, true);
 
             $path = $this->get_path($message);
-            if ($path) {
+            if ($path && file_exists($path)) {
                 $this->log("Copying " . $path . " to " . $bucket_name);
                 $this->copy($path, $bucket_name, $this->get_gcs_path($path));
             }
