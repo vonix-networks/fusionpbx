@@ -420,7 +420,9 @@
 				if outbound_caller_id_number:len() < 11 then
 					outbound_caller_id_number = "1" .. outbound_caller_id_number;
 				end
-				cmd="curl -v -X POST " .. api_url .." -u " .. access_key .. ":" .. secret_key .. " -H \"Content-type: application/json\" -d '{\"from\": \"+" .. outbound_caller_id_number .. "\", \"to\": \"+" .. to .."\", \"text\": \"" .. body .."\"}'"		
+				local json = "{\"from\":\"" .. json_escape(outbound_caller_id_number) .. "\",\"to\":\"" .. json_escape(to) .. "\",\"text\":\"" .. json_escape(body) .. "\"}"
+
+				cmd ="curl -X POST \"" .. api_url .."\" -H \"Content-Type: application/json\" -d \"" .. shell_esc(json) .. "\" -u '".. access_key ..":".. secret_key .."'";
 			elseif (carrier == "questblue") then
 				if to:len() == 11 then
 					to = to:sub(2);
