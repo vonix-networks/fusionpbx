@@ -53,9 +53,9 @@ function route_and_send_sms($from, $to, $body, $media = "") {
 				$to = intval(preg_replace('/(^[1])/','', $to));
 				$from = intval($from);
 				if ($debug) {
-					error_log("TO: " . print_r($to,true));
-					error_log("FROM: " . print_r($from,true));
-					error_log("BODY: " . print_r($body,true));
+					//error_log("TO: " . print_r($to,true));
+					//error_log("FROM: " . print_r($from,true));
+					//error_log("BODY: " . print_r($body,true));
 				}
 				$mailbody = $body;
 				if (gettype($media)=="array") {
@@ -70,11 +70,11 @@ function route_and_send_sms($from, $to, $body, $media = "") {
 					}
 				}
 				if ($debug) {
-					error_log("BODY: " . print_r($body,true));
+					//error_log("BODY: " . print_r($body,true));
 				}
 				$body = preg_replace('([\n])', '<br>', $body); // escape newlines
 				if ($debug) {
-					error_log("BODY-revised: " . print_r($body,true));
+					//error_log("BODY-revised: " . print_r($body,true));
 				}
 
 				// Check for chatplan_detail in sms_destinations table
@@ -88,7 +88,7 @@ function route_and_send_sms($from, $to, $body, $media = "") {
 				$sql .= " and chatplan_detail_data <> ''";
 
 				if ($debug) {
-					error_log("SQL: " . print_r($sql,true));
+					//error_log("SQL: " . print_r($sql,true));
 				}
 
 				$prep_statement = $db->prepare(check_sql($sql));
@@ -116,7 +116,7 @@ function route_and_send_sms($from, $to, $body, $media = "") {
 					$sql .= " and destination_number like :to and dialplan_detail_type = 'transfer'";
 
 					if ($debug) {
-						error_log("SQL: " . print_r($sql,true));
+						//error_log("SQL: " . print_r($sql,true));
 					}
 
 					$prep_statement = $db->prepare(check_sql($sql));
@@ -137,10 +137,10 @@ function route_and_send_sms($from, $to, $body, $media = "") {
 				unset ($prep_statement);
 
 				if ($debug) {
-					error_log("SQL: " . print_r($sql,true));
-					error_log("MATCH: " . print_r($match[0],true));
-					error_log("DOMAIN_NAME: " . print_r($domain_name,true));
-					error_log("DOMAIN_UUID: " . print_r($domain_uuid,true));
+					//error_log("SQL: " . print_r($sql,true));
+					//error_log("MATCH: " . print_r($match[0],true));
+					//error_log("DOMAIN_NAME: " . print_r($domain_name,true));
+					//error_log("DOMAIN_UUID: " . print_r($domain_uuid,true));
 
 				}
 				//load default and domain settings
@@ -163,8 +163,8 @@ function route_and_send_sms($from, $to, $body, $media = "") {
 				$prep_statement->execute(array(':extension' => $match[0], ':domain_uuid' => $domain_uuid));
 				$result = $prep_statement->fetchAll(PDO::FETCH_NAMED);
 				if ($debug) {
-					error_log("SQL: " . print_r($sql,true));
-					error_log("RG RESULT: " . print_r($result,true));
+					//error_log("SQL: " . print_r($sql,true));
+					//error_log("RG RESULT: " . print_r($result,true));
 				}
 
 				//send sms via Lua script
@@ -174,21 +174,21 @@ function route_and_send_sms($from, $to, $body, $media = "") {
 						$switch_cmd .= $row['destination_number'] . "@" . $domain_name;
 						$switch_cmd .= " " . $from . " '" . $body . "' " . $mailsent;
 						if ($debug) {
-							error_log(print_r($switch_cmd,true));
+							//error_log(print_r($switch_cmd,true));
 						}
 						$result2 = trim(event_socket_request($fp, $switch_cmd));
 						if ($debug) {
-							error_log("RESULT: " . print_r($result2,true));
+							//error_log("RESULT: " . print_r($result2,true));
 						}
 					}
 				} else { //single extension
 					$switch_cmd = "api luarun app.lua sms inbound " . $match[0] . "@" . $domain_name . " " . $from . " '" . urlencode($body) . "' " . $mailsent;
 					if ($debug) {
-						error_log(print_r($switch_cmd,true));
+						//error_log(print_r($switch_cmd,true));
 					}
 					$result2 = trim(event_socket_request($fp, $switch_cmd));
 					if ($debug) {
-						error_log("RESULT: " . print_r($result2,true));
+						//error_log("RESULT: " . print_r($result2,true));
 					}
 				}
 
