@@ -458,7 +458,7 @@
 	echo "</form>";
 
 //get recent calls from the db (if not editing an existing call block record)
-	if (!is_uuid($_REQUEST["id"])) {
+	if (!is_uuid($_REQUEST["id"]) && false) {
 
 		if (permission_exists('call_block_all')) {
 			$sql = "select caller_id_number, caller_id_name, caller_id_number, start_epoch, direction, hangup_cause, duration, billsec, xml_cdr_uuid ";
