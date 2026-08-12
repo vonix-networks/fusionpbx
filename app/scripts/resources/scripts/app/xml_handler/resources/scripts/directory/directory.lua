@@ -382,6 +382,12 @@
 									dial_string = row.dial_string;
 								else
 										local destination = (DIAL_STRING_BASED_ON_USERID and sip_from_number or sip_from_user) .. "@" .. domain_name;
+									--get the dial string from the domain or default settings
+										if (dial_string == null) then
+											local Settings = require "resources.functions.lazy_settings";
+											local settings = Settings.new(dbh, domain_name, domain_uuid);
+											dial_string = settings:get('domain', 'dial_string', 'text');
+										end
 									--set a default dial string
 										if (dial_string == null) then
 											dial_string = "{sip_invite_domain=" .. domain_name .. ",presence_id=" .. presence_id .. "}${sofia_contact(" .. destination .. ")}";
