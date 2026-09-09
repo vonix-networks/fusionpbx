@@ -308,6 +308,9 @@ class xml_cdr {
 			//$this->database->domain_uuid = $domain_uuid;
 			$response = $this->database->save($this->array, false);
 			if ($response['code'] == '200') {
+				//publish the call details record to pub/sub
+				$this->publish();
+
 				//delete the file after it is saved to the database
 				if (file_exists($this->xml_cdr_dir . '/' . $this->file)) {
 					unlink($this->xml_cdr_dir . '/' . $this->file);
@@ -2511,6 +2514,29 @@ class xml_cdr {
 	 *
 	 * @return string Returns 'cdr' for the name
 	 */
+	/**
+	 * Publishes the saved call details record to Google Cloud Pub/Sub. Does
+	 * nothing when no google cloud project has been configured, so systems
+	 * that do not publish pay only the settings lookup.
+	 *
+	 * @return void
+	 */
+	public function publish(): void {
+		if (empty($this->array)) {
+			return;
+		}
+		try {
+			$publisher = new xml_cdr_publisher();
+			if ($publisher->enabled()) {
+				$publisher->publish_array($this->array);
+			}
+		}
+		catch (Throwable $t) {
+			//publishing must never stop a call details record being kept
+			error_log('[xml_cdr] publish failed: '.$t->getMessage());
+		}
+	}
+
 	public static function database_maintenance_category(): string {
 		return "cdr";
 	}

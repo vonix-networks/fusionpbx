@@ -360,6 +360,7 @@
 	require "app.voicemail.resources.functions.listen_to_recording";
 	require "app.voicemail.resources.functions.message_waiting";
 	require "app.voicemail.resources.functions.send_email";
+	require "app.voicemail.resources.functions.copy_cloud_storage";
 	require "app.voicemail.resources.functions.send_sms";
 	require "app.voicemail.resources.functions.delete_recording";
 	require "app.voicemail.resources.functions.message_saved";
@@ -688,6 +689,7 @@
 
 						--send the email with the voicemail recording attached
 							if (message_length ~= nil and tonumber(message_length) > 1) then
+								copy_cloud_storage(voicemail_id_copy, voicemail_message_uuid);
 								send_email(voicemail_id_copy, voicemail_message_uuid);
 								if (voicemail_to_sms) then
 									send_sms(voicemail_id_copy, voicemail_message_uuid);

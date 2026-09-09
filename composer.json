@@ -1,0 +1,17 @@
+{
+	"name": "vonix/fusionpbx",
+	"description": "Vonix additions to FusionPBX: CDR publishing and call recording / voicemail archival to Google Cloud.",
+	"type": "project",
+	"license": "MPL-1.1",
+	"require": {
+		"php": ">=8.1",
+		"google/cloud-pubsub": "^2.0",
+		"google/cloud-storage": "^1.45"
+	},
+	"config": {
+		"platform": {
+			"php": "8.4"
+		},
+		"sort-packages": true
+	}
+}

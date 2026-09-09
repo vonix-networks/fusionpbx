@@ -10,3 +10,6 @@ secure/*.sqlite
 *.php~
 
 app/yealink/resources/firmware/*
+
+# composer dependencies, installed at deploy time with `composer install`
+/vendor/

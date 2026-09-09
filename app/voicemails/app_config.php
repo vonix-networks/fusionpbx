@@ -413,6 +413,15 @@
 		$apps[$x]['default_settings'][$y]['default_setting_value'] = "24";
 		$apps[$x]['default_settings'][$y]['default_setting_enabled'] = "true";
 		$apps[$x]['default_settings'][$y]['default_setting_description'] = "Number of hours the voicemail deletion queue will retain deleted voicemails";
+		$y++;
+		$apps[$x]['default_settings'][$y]['default_setting_uuid'] = "75d94c9a-07c2-5182-bd78-3415b1c10723";
+		$apps[$x]['default_settings'][$y]['default_setting_category'] = "voicemail";
+		$apps[$x]['default_settings'][$y]['default_setting_subcategory'] = "voicemail_bucket";
+		$apps[$x]['default_settings'][$y]['default_setting_name'] = "text";
+		$apps[$x]['default_settings'][$y]['default_setting_value'] = "";
+		$apps[$x]['default_settings'][$y]['default_setting_enabled'] = "false";
+		$apps[$x]['default_settings'][$y]['default_setting_description'] = "Storage bucket that voicemail messages are copied to as they are left.";
+		$y++;
 	//schema details
 		$y=0;
 		$apps[$x]['db'][$y]['table']['name'] = "v_voicemails";
