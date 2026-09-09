@@ -1,0 +1,4 @@
+# Vendored composer dependencies. Committed so deploys stay a plain git pull;
+# regenerate with: composer install --no-dev --optimize-autoloader
+vendor/** linguist-generated=true
+vendor/** -diff
