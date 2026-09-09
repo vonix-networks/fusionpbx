@@ -445,8 +445,8 @@
 			$dial_string .= "origination_uuid="    . $origination_uuid . ",";
 			$dial_string .= "fax_uuid="            . $fax_uuid . ",";
 			$dial_string .= "fax_queue_uuid="      . $fax_queue_uuid . ",";
-			$dial_string .= "mailto_address='"     . $fax_email_address . "',";
-			$dial_string .= "mailfrom_address='"   . $email_from . "',";
+			$dial_string .= "mailto_address="      . str_replace(",", "\\,", $fax_email_address) . ",";
+			$dial_string .= "mailfrom_address="    . str_replace(",", "\\,", $email_from) . ",";
 			$dial_string .= "fax_retry_attempts="  . $fax_retry_count . ",";
 			$dial_string .= "fax_retry_limit="     . $retry_limit . ",";
 			$dial_string .= "fax_recipient='"      . escape_quote($fax_recipient) . "',";

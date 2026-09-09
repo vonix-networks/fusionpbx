@@ -836,8 +836,8 @@ if (!function_exists('fax_split_dtmf')) {
 				//build the fax dial string
 				$dial_string = $common_variables;
 				$dial_string .= $fax_variables;
-				$dial_string .= "mailto_address='"     . $mail_to_address   . "',";
-				$dial_string .= "mailfrom_address='"   . $mail_from_address . "',";
+				$dial_string .= "mailto_address="      . str_replace(",", "\\,", $mail_to_address)   . ",";
+				$dial_string .= "mailfrom_address="    . str_replace(",", "\\,", $mail_from_address) . ",";
 				//$dial_string .= "fax_uri="             . $fax_uri           . ",";
 				//$dial_string .= "fax_retry_attempts=1" . ",";
 				//$dial_string .= "fax_retry_limit=20"   . ",";
