@@ -375,7 +375,7 @@
 		end
 		if (debug["info"]) then
 			if (access_key ~= nil) then freeswitch.consoleLog("notice", "[sms] access_key: " .. access_key .. "\n") end;
-			if (secret_key ~= nil) then freeswitch.consoleLog("notice", "[sms] secret_key: " .. secret_key .. "\n") end;
+			if (secret_key ~= nil) then freeswitch.consoleLog("notice", "[sms] secret_key: (set)\n") end;
 			if (api_url ~= nil) then freeswitch.consoleLog("notice", "[sms] api_url: " .. api_url .. "\n") end;
 			if (username ~= nil) then freeswitch.consoleLog("notice", "[sms] username: " .. username .. "\n") end;
 			if (delivery_status_webhook_url ~= nil) then freeswitch.consoleLog("notice", "[sms] delivery_status_webhook_url: " .. delivery_status_webhook_url .. "\n") end;
@@ -451,13 +451,68 @@
 					outbound_caller_id_number = "1" .. outbound_caller_id_number;
 				end
 				cmd ="curl -X POST \"" .. api_url .."\" -H \"Content-Type: application/json\"  -H \"x-profile-secret: " .. secret_key .. "\" -d '{\"from\": \"+" .. outbound_caller_id_number .. "\", \"to\": \"+" .. to .. "\", \"body\": \"" .. body .. "\", \"delivery_status_webhook_url\": \"" .. delivery_status_webhook_url .. "\"}'";
+			elseif (carrier == "vonix") then
+				-- Vonix API: POST /restapi/v1/message with the domain's API credential
+				-- (sms.vonix_access_key / sms.vonix_secret_key domain settings).
+				-- The JSON body and the credential go to curl through files, never
+				-- on the command line, so nothing secret shows in ps or in this log.
+				local function e164(number)
+					local digits = tostring(number or ""):gsub("%D", "");
+					if digits:len() == 10 then
+						return "+1" .. digits;
+					end
+					return "+" .. digits;
+				end
+				local function curl_quote(s)
+					return '"' .. tostring(s):gsub('\\', '\\\\'):gsub('"', '\\"') .. '"';
+				end
+				if (api_url == nil or api_url == "") then
+					api_url = "https://api.vonix.io/restapi/v1/message";
+				end
+				if (access_key == nil or access_key == "" or secret_key == nil or secret_key == "") then
+					freeswitch.consoleLog("err", "[sms] vonix: sms.vonix_access_key / sms.vonix_secret_key are not set for domain " .. tostring(domain_name) .. ", not sending\n");
+					cmd = nil;
+				else
+					local lunajson = require "resources.functions.lunajson";
+					-- savebody is the text before newlines were turned into "\n" for the other carriers.
+					local payload = lunajson.encode({
+						from = e164(outbound_caller_id_number),
+						to = { e164(to) },
+						text = savebody,
+					});
+					local body_file = os.tmpname();
+					local config_file = os.tmpname();
+					local f = io.open(body_file, "w");
+					f:write(payload);
+					f:close();
+					f = io.open(config_file, "w");
+					f:write("url = " .. curl_quote(api_url) .. "\n");
+					f:write("user = " .. curl_quote(access_key .. ":" .. secret_key) .. "\n");
+					f:write("header = \"Content-Type: application/json\"\n");
+					f:write("data-binary = " .. curl_quote("@" .. body_file) .. "\n");
+					f:close();
+					cleanup_files = { body_file, config_file };
+					cmd = "curl -sS --max-time 15 -w ' http_status=%{http_code}' -K " .. config_file;
+					if (debug["info"]) then
+						freeswitch.consoleLog("notice", "[sms] vonix: POST " .. api_url .. " " .. payload .. "\n");
+					end
+				end
 			end
-			if (debug["info"]) then
+			if (cmd == nil) then
+				freeswitch.consoleLog("err", "[sms] no send command for carrier '" .. tostring(carrier) .. "'\n");
+				cmd = "true";
+			end
+			if (debug["info"] and carrier ~= "vonix") then
 				freeswitch.consoleLog("notice", "[sms] CMD: " .. cmd .. "\n");
 			end
 			local handle = io.popen(cmd)
 			local result = handle:read("*a")
 			handle:close()
+			if (cleanup_files ~= nil) then
+				for _, path in ipairs(cleanup_files) do
+					os.remove(path);
+				end
+			end
 			if (debug["info"]) then
 				freeswitch.consoleLog("notice", "[sms] CURL Returns: " .. result .. "\n");
 			end
